@@ -279,17 +279,24 @@ st.markdown(f'<div class="sec sec-route"><div class="sec-title"><span class="sec
 NONE = "--"
 _pick_msg = "選択してください" if lang == "ja" else "Select..."
 
+# check for pending swap
+_swap_from = st.session_state.pop("_swap_from", None)
+_swap_to = st.session_state.pop("_swap_to", None)
+
 from_opts = [NONE] + CAMPUSES
+_from_idx = from_opts.index(_swap_from) if _swap_from in from_opts else 0
+
 col_f, col_t = st.columns(2)
 with col_f:
     origin = st.selectbox(
-        f"\U0001F4CD {HERE[lang]}", from_opts, index=0,
+        f"\U0001F4CD {HERE[lang]}", from_opts, index=_from_idx,
         format_func=lambda c: _pick_msg if c == NONE else f"{CAMPUS_EMOJI[c]} {_s(c)}",
         key="o")
 with col_t:
     to_opts = [NONE] + ([c for c in CAMPUSES if c != origin] if origin != NONE else CAMPUSES)
+    _to_idx = to_opts.index(_swap_to) if _swap_to in to_opts else 0
     destination = st.selectbox(
-        f"\U0001F3AF {GOAL[lang]}", to_opts, index=0,
+        f"\U0001F3AF {GOAL[lang]}", to_opts, index=_to_idx,
         format_func=lambda c: _pick_msg if c == NONE else f"{CAMPUS_EMOJI[c]} {_s(c)}",
         key="d")
 
@@ -297,8 +304,13 @@ with col_t:
 if origin != NONE and destination != NONE:
     swap_label = "\U0001F504 入れ替え" if lang == "ja" else "\U0001F504 Swap"
     if st.button(swap_label, key="swap"):
-        st.session_state.o = destination
-        st.session_state.d = origin
+        # can't assign directly to widget-bound keys; store swap targets separately
+        st.session_state["_swap_from"] = destination
+        st.session_state["_swap_to"] = origin
+        # remove widget keys so they pick up defaults on rerun
+        st.session_state.pop("o", None)
+        st.session_state.pop("d", None)
+        st.session_state.pop("bs", None)
         st.rerun()
 
 # bus stop sub-selector
