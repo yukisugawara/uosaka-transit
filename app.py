@@ -26,6 +26,9 @@ _dark_vars = """
   --btn2-bg: rgba(255,255,255,.08); --btn2-border: rgba(255,255,255,.15);
   --btn2-text: #e2e8f0; --pill-free-text: #1a1a2e; --chip-paid-bg: rgba(255,255,255,.08);
   --chip-paid-text: #cbd5e1; --rsum-paid: #cbd5e1;
+  --from-text: #c4b5fd; --to-text: #6ee7b7; --node-dim: #64748b;
+  --node-bg: rgba(255,255,255,.02); --node-border: rgba(255,255,255,.1);
+  --rail-line: rgba(255,255,255,.05);
 """
 _light_vars = """
   --bg: #f8fafc; --bg-grad: linear-gradient(160deg, #f8fafc, #eef2ff 50%, #f8fafc);
@@ -35,6 +38,9 @@ _light_vars = """
   --btn2-bg: rgba(0,0,0,.05); --btn2-border: rgba(0,0,0,.12);
   --btn2-text: #334155; --pill-free-text: #1a1a2e; --chip-paid-bg: rgba(0,0,0,.06);
   --chip-paid-text: #475569; --rsum-paid: #334155;
+  --from-text: #7c3aed; --to-text: #059669; --node-dim: #64748b;
+  --node-bg: rgba(0,0,0,.03); --node-border: rgba(0,0,0,.12);
+  --rail-line: rgba(0,0,0,.08);
 """
 _theme_vars = _dark_vars if is_dark else _light_vars
 
@@ -132,8 +138,8 @@ _css_body = """
   box-shadow:0 0 6px rgba(251,191,36,.3);
 }
 .chip-paid {
-  display:inline-block; background:rgba(255,255,255,.08);
-  color:#cbd5e1; font-weight:700; font-size:.68rem;
+  display:inline-block; background:var(--chip-paid-bg);
+  color:var(--chip-paid-text); font-weight:700; font-size:.68rem;
   padding:.08rem .45rem; border-radius:999px; margin-left:.3rem;
 }
 
@@ -149,7 +155,7 @@ _css_body = """
   background:linear-gradient(90deg,var(--gold),#f59e0b);
   -webkit-background-clip:text; -webkit-text-fill-color:transparent;
 }
-.rsum-f1 { font-weight:700; font-size:.95rem; color:#cbd5e1; }
+.rsum-f1 { font-weight:700; font-size:.95rem; color:var(--rsum-paid); }
 
 /* status */
 .pill {
@@ -251,6 +257,14 @@ with col_t:
         format_func=lambda c: _pick_msg if c == NONE else f"{CAMPUS_EMOJI[c]} {_s(c)}",
         key="d")
 
+# swap button
+if origin != NONE and destination != NONE:
+    swap_label = "\U0001F504 入れ替え" if lang == "ja" else "\U0001F504 Swap"
+    if st.button(swap_label, key="swap"):
+        st.session_state.o = destination
+        st.session_state.d = origin
+        st.rerun()
+
 # bus stop sub-selector
 from_stop = None
 bus_stops = get_bus_stops(origin) if origin != NONE else []
@@ -267,6 +281,14 @@ CY, R = 36, 14
 has_origin = origin != NONE
 has_dest = destination != NONE
 
+# theme-aware SVG colors (CSS var() doesn't work inside SVG attributes)
+_from_text = "#c4b5fd" if is_dark else "#7c3aed"
+_to_text = "#6ee7b7" if is_dark else "#059669"
+_node_dim = "#64748b" if is_dark else "#64748b"
+_node_bg = "rgba(255,255,255,.02)" if is_dark else "rgba(0,0,0,.03)"
+_node_border = "rgba(255,255,255,.1)" if is_dark else "rgba(0,0,0,.12)"
+_rail_color = "rgba(255,255,255,.05)" if is_dark else "rgba(0,0,0,.08)"
+
 nodes_svg = ""
 for c in MAP_ORDER:
     cx = MX[c]
@@ -279,22 +301,22 @@ for c in MAP_ORDER:
             f'<circle cx="{cx}" cy="{CY}" r="{R}" fill="rgba(167,139,250,.1)" stroke="#a78bfa" stroke-width="1.5"'
             f' style="filter:drop-shadow(0 0 4px rgba(167,139,250,.4))"/>'
             f'<text x="{cx}" y="{CY+3}" text-anchor="middle" font-size="11">{em}</text>'
-            f'<text x="{cx}" y="{CY+R+10}" text-anchor="middle" font-size="7" font-weight="700" fill="#c4b5fd">{nm}</text>'
-            f'<text x="{cx}" y="{CY-R-4}" text-anchor="middle" font-size="6.5" font-weight="800" fill="#c4b5fd">\U0001F4CD {HERE[lang]}</text>'
+            f'<text x="{cx}" y="{CY+R+10}" text-anchor="middle" font-size="7" font-weight="700" fill="{_from_text}">{nm}</text>'
+            f'<text x="{cx}" y="{CY-R-4}" text-anchor="middle" font-size="6.5" font-weight="800" fill="{_from_text}">\U0001F4CD {HERE[lang]}</text>'
         )
     elif has_dest and c == destination:
         nodes_svg += (
             f'<circle cx="{cx}" cy="{CY}" r="{R}" fill="rgba(52,211,153,.1)" stroke="#34d399" stroke-width="1.5"'
             f' style="filter:drop-shadow(0 0 4px rgba(52,211,153,.4))"/>'
             f'<text x="{cx}" y="{CY+3}" text-anchor="middle" font-size="11">{em}</text>'
-            f'<text x="{cx}" y="{CY+R+10}" text-anchor="middle" font-size="7" font-weight="700" fill="#6ee7b7">{nm}</text>'
-            f'<text x="{cx}" y="{CY-R-4}" text-anchor="middle" font-size="6.5" font-weight="800" fill="#6ee7b7">\U0001F3AF {GOAL[lang]}</text>'
+            f'<text x="{cx}" y="{CY+R+10}" text-anchor="middle" font-size="7" font-weight="700" fill="{_to_text}">{nm}</text>'
+            f'<text x="{cx}" y="{CY-R-4}" text-anchor="middle" font-size="6.5" font-weight="800" fill="{_to_text}">\U0001F3AF {GOAL[lang]}</text>'
         )
     else:
         nodes_svg += (
-            f'<circle cx="{cx}" cy="{CY}" r="{R}" fill="rgba(255,255,255,.02)" stroke="rgba(255,255,255,.1)" stroke-width="1"/>'
+            f'<circle cx="{cx}" cy="{CY}" r="{R}" fill="{_node_bg}" stroke="{_node_border}" stroke-width="1"/>'
             f'<text x="{cx}" y="{CY+3}" text-anchor="middle" font-size="11">{em}</text>'
-            f'<text x="{cx}" y="{CY+R+10}" text-anchor="middle" font-size="7" font-weight="600" fill="#64748b">{nm}</text>'
+            f'<text x="{cx}" y="{CY+R+10}" text-anchor="middle" font-size="7" font-weight="600" fill="{_node_dim}">{nm}</text>'
         )
 
 # arrow (only when both selected)
@@ -313,7 +335,7 @@ if has_origin and has_dest:
 
 svg = (
     f'<svg viewBox="0 0 300 70" style="width:100%;max-width:520px;display:block;margin:.3rem auto;">'
-    f'<line x1="45" y1="{CY}" x2="255" y2="{CY}" stroke="rgba(255,255,255,.05)" stroke-width="1" stroke-dasharray="4,3"/>'
+    f'<line x1="45" y1="{CY}" x2="255" y2="{CY}" stroke="{_rail_color}" stroke-width="1" stroke-dasharray="4,3"/>'
     f'{arrow_svg}{nodes_svg}</svg>'
 )
 st.markdown(svg, unsafe_allow_html=True)
