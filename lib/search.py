@@ -213,6 +213,15 @@ def _try_direct_train(
     ])
 
 
+def _get_through_fare(from_id: str, to_id: str) -> int | None:
+    """直通運賃を検索する（同一運賃体系内の通し運賃）."""
+    data = load_timetables()
+    for seg in data["train_segments"]:
+        if seg["from"] == from_id and seg["to"] == to_id:
+            return seg["fare"]
+    return None
+
+
 def _try_one_transfer(
     origin: str, destination: str,
     os: dict, ds: dict, transfer_id: str,
@@ -229,6 +238,14 @@ def _try_one_transfer(
     train2 = get_next_train(transfer_id, ds["station_id"], transfer_ready)
     if not train2:
         return None
+
+    # 同一路線の乗継は通し運賃を適用
+    if train1["line"] == train2["line"]:
+        through_fare = _get_through_fare(os["station_id"], ds["station_id"])
+        if through_fare is not None:
+            # 通し運賃を2区間に按分: 1区間目に全額、2区間目を0円
+            train1 = {**train1, "fare": through_fare}
+            train2 = {**train2, "fare": 0}
 
     campus_arrive = train2["arrive"] + timedelta(minutes=ds["walk_min"])
 
