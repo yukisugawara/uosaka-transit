@@ -315,49 +315,59 @@ def _photo_card(campus: str, role: str, selected: bool, disabled: bool = False) 
     b64 = _img_b64(CAMPUS_IMG[campus])
     if selected:
         border_col = "var(--purple)" if role == "from" else "var(--green)"
+        glow_rgba = "rgba(167,139,250,.5)" if role == "from" else "rgba(52,211,153,.5)"
         border = f"3px solid {border_col}"
-        shadow = f"0 0 14px {'rgba(167,139,250,.5)' if role == 'from' else 'rgba(52,211,153,.5)'}"
-        overlay = "rgba(0,0,0,.35)"
-        badge = ""
+        shadow = f"0 0 18px {glow_rgba}, inset 0 0 12px {glow_rgba}"
+        overlay = "rgba(0,0,0,.25)"
+        name_style = f"color:#fff;font-weight:900;font-size:1.05rem;text-shadow:0 0 10px {glow_rgba},0 1px 4px rgba(0,0,0,.6);"
     elif disabled:
         border = "2px solid var(--dim)"
         shadow = "none"
         overlay = "rgba(0,0,0,.65)"
-        badge = ""
+        name_style = "color:rgba(255,255,255,.4);font-weight:700;font-size:.9rem;"
     else:
-        border = "2px solid transparent"
+        border = "2px solid rgba(255,255,255,.15)"
         shadow = "none"
         overlay = "rgba(0,0,0,.45)"
-        badge = ""
+        name_style = "color:#fff;font-weight:800;font-size:1rem;text-shadow:0 1px 4px rgba(0,0,0,.6);"
     return (
         f'<div style="position:relative;border-radius:12px;overflow:hidden;'
-        f'border:{border};box-shadow:{shadow};aspect-ratio:16/10;">'
+        f'border:{border};box-shadow:{shadow};aspect-ratio:16/10;transition:all .25s;">'
         f'<img src="data:image/jpeg;base64,{b64}" style="width:100%;height:100%;object-fit:cover;display:block;"/>'
         f'<div style="position:absolute;inset:0;background:{overlay};display:flex;align-items:center;justify-content:center;">'
-        f'<span style="color:#fff;font-weight:800;font-size:1rem;text-shadow:0 1px 4px rgba(0,0,0,.6);">{name}</span>'
-        f'</div>{badge}</div>'
+        f'<span style="{name_style}">{name}</span>'
+        f'</div></div>'
     )
 
 def _render_campus_row(role: str, selected_campus: str, disabled_campus: str = ""):
-    """Render a row of campus photo cards with clickable buttons underneath."""
+    """Render campus photo cards with buttons. Buttons are prominent when nothing selected."""
+    none_selected = (selected_campus == NONE)
     cols = st.columns(3)
     for i, c in enumerate(MAP_ORDER):
         with cols[i]:
             is_sel = (selected_campus == c)
             is_dis = (c == disabled_campus)
-            # photo card (visual only)
+            # photo card
             st.markdown(_photo_card(c, role, is_sel, is_dis), unsafe_allow_html=True)
-            # button label based on state
+            # button
             if is_sel:
                 btn_lbl = "\u2714 " + ({"ja": "選択中", "en": "Selected"}[lang])
+                btn_type = "primary"
             elif is_dis:
                 btn_lbl = "\u2014"
+                btn_type = "secondary"
+            elif none_selected:
+                btn_lbl = "\u261D " + ({"ja": "ここから", "en": "Here"}[lang] if role == "from"
+                                       else {"ja": "ここへ", "en": "Go here"}[lang])
+                btn_type = "primary"
             else:
-                btn_lbl = {"ja": "選択", "en": "Select"}[lang]
+                btn_lbl = {"ja": "変更", "en": "Change"}[lang]
+                btn_type = "secondary"
             if st.button(
                 btn_lbl, key=f"{role}_{c}",
                 use_container_width=True,
                 disabled=(is_sel or is_dis),
+                type=btn_type,
             ):
                 if role == "from":
                     st.session_state.origin = c
