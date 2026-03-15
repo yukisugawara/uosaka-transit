@@ -290,14 +290,60 @@ origin = st.session_state.origin
 destination = st.session_state.destination
 from_stop = st.session_state.from_stop
 
+# --- campus image cards ---
+import base64, pathlib
+
+CAMPUS_IMG = {
+    "豊中キャンパス": "image/toyonaka-image.jpeg",
+    "吹田キャンパス": "image/suita-image.jpeg",
+    "箕面キャンパス": "image/minoh-image.jpeg",
+}
+
+@st.cache_data
+def _img_b64(path: str) -> str:
+    data = pathlib.Path(path).read_bytes()
+    return base64.b64encode(data).decode()
+
+def _photo_card(campus: str, role: str, selected: bool, disabled: bool = False) -> str:
+    name = _s(campus)
+    b64 = _img_b64(CAMPUS_IMG[campus])
+    if selected:
+        border_col = "var(--purple)" if role == "from" else "var(--green)"
+        border = f"3px solid {border_col}"
+        shadow = f"0 0 14px {'rgba(167,139,250,.5)' if role == 'from' else 'rgba(52,211,153,.5)'}"
+        overlay = "rgba(0,0,0,.35)"
+        badge = f'<div style="position:absolute;top:6px;right:6px;background:{border_col};color:#fff;font-size:.6rem;font-weight:800;padding:1px 6px;border-radius:99px;">\u2714</div>'
+    elif disabled:
+        border = "2px solid var(--dim)"
+        shadow = "none"
+        overlay = "rgba(0,0,0,.65)"
+        badge = ""
+    else:
+        border = "2px solid transparent"
+        shadow = "none"
+        overlay = "rgba(0,0,0,.45)"
+        badge = ""
+    return (
+        f'<div style="position:relative;border-radius:12px;overflow:hidden;'
+        f'border:{border};box-shadow:{shadow};aspect-ratio:16/10;">'
+        f'<img src="data:image/jpeg;base64,{b64}" style="width:100%;height:100%;object-fit:cover;display:block;"/>'
+        f'<div style="position:absolute;inset:0;background:{overlay};display:flex;align-items:center;justify-content:center;">'
+        f'<span style="color:#fff;font-weight:800;font-size:1rem;text-shadow:0 1px 4px rgba(0,0,0,.6);">{CAMPUS_EMOJI[campus]} {name}</span>'
+        f'</div>{badge}</div>'
+    )
+
 # --- Origin ---
 st.markdown(f"**\U0001F4CD {HERE[lang]}**")
+cards_o = "".join(_photo_card(c, "from", origin == c) for c in MAP_ORDER)
+st.markdown(
+    f'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:.2rem;">{cards_o}</div>',
+    unsafe_allow_html=True,
+)
 cols_o = st.columns(3)
 for i, c in enumerate(MAP_ORDER):
     with cols_o[i]:
         is_sel = (origin == c)
-        lbl = f"\u2714 {CAMPUS_EMOJI[c]} {_s(c)}" if is_sel else f"{CAMPUS_EMOJI[c]} {_s(c)}"
-        if st.button(lbl, key=f"o_{c}", use_container_width=True, disabled=is_sel):
+        if st.button(_s(c), key=f"o_{c}", use_container_width=True, disabled=is_sel):
             st.session_state.origin = c
             st.session_state.from_stop = None
             if st.session_state.destination == c:
@@ -324,18 +370,17 @@ if bus_stops:
 
 # --- Destination ---
 st.markdown(f"**\U0001F3AF {GOAL[lang]}**")
+cards_d = "".join(_photo_card(c, "to", destination == c, disabled=(c == origin)) for c in MAP_ORDER)
+st.markdown(
+    f'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:.2rem;">{cards_d}</div>',
+    unsafe_allow_html=True,
+)
 cols_d = st.columns(3)
 for i, c in enumerate(MAP_ORDER):
     with cols_d[i]:
         is_sel = (destination == c)
         dis = is_sel or (c == origin)
-        if c == origin:
-            lbl = f"\U0001F6AB {_s(c)}"
-        elif is_sel:
-            lbl = f"\u2714 {CAMPUS_EMOJI[c]} {_s(c)}"
-        else:
-            lbl = f"{CAMPUS_EMOJI[c]} {_s(c)}"
-        if st.button(lbl, key=f"d_{c}", use_container_width=True, disabled=dis):
+        if st.button(_s(c), key=f"d_{c}", use_container_width=True, disabled=dis):
             st.session_state.destination = c
             st.rerun()
 
