@@ -874,3 +874,94 @@ st.markdown(
     f'<div class="ft">{t("footer", lang)}<br>{updated}<br>{source_label}</div>',
     unsafe_allow_html=True,
 )
+
+# ================================================================== #
+#  Help modal (fixed bottom-left button)
+# ================================================================== #
+HELP_JA = """
+<b>使い方</b><br><br>
+<b>1. 現在地を選ぶ</b><br>
+写真カードの下の「ここから」ボタンをタップして、今いるキャンパスを選びます。<br><br>
+<b>2. 行き先を選ぶ</b><br>
+同様に、行きたいキャンパスを選びます。<br><br>
+<b>3. 出発時刻を設定</b><br>
+「いま出発」にチェックを入れると現在時刻で検索します。チェックを外すと日付・時・分を自由に指定できます。<br><br>
+<b>4. ルートを検索</b><br>
+「ルートを検索」ボタンをタップすると、学内バス・モノレール・阪急電車・阪急バスなどのルート候補が表示されます。<br><br>
+<b>その他の機能</b><br>
+・ 🔄 入れ替え：現在地と行き先を入れ替えます<br>
+・ ☀️/🌙：明るい/暗いテーマを切り替えます<br>
+・ EN/JP：英語/日本語を切り替えます<br>
+・ 吹田キャンパスでは停留所（コンベンションセンター前・工学部前・人間科学部前）を選べます<br>
+・ バス停マップや施設一覧は折りたたみメニューから確認できます
+"""
+
+HELP_EN = """
+<b>How to Use</b><br><br>
+<b>1. Select your location</b><br>
+Tap the button below a campus photo card to set it as your starting point.<br><br>
+<b>2. Select your destination</b><br>
+Tap another campus as your destination.<br><br>
+<b>3. Set departure time</b><br>
+Check "Depart now" to use the current time, or uncheck to set a custom date and time.<br><br>
+<b>4. Search routes</b><br>
+Tap "Search routes" to see options including campus shuttle, monorail, Hankyu trains, and Hankyu Bus.<br><br>
+<b>Other features</b><br>
+・ 🔄 Swap: Switch origin and destination<br>
+・ ☀️/🌙: Toggle light/dark theme<br>
+・ EN/JP: Switch language<br>
+・ For Suita Campus, you can select a specific bus stop<br>
+・ Bus stop maps and facility lists are available in collapsible sections
+"""
+
+help_content = HELP_JA if lang == "ja" else HELP_EN
+help_btn_label = "❓"
+
+st.markdown(
+    f"""
+    <style>
+    .help-fab {{
+        position:fixed; bottom:1.2rem; left:1.2rem; z-index:9999;
+        width:44px; height:44px; border-radius:50%;
+        background:linear-gradient(135deg,var(--purple),var(--blue));
+        color:#fff; border:none; cursor:pointer;
+        font-size:1.2rem; font-weight:800;
+        box-shadow:0 4px 16px rgba(129,140,248,.4);
+        display:flex; align-items:center; justify-content:center;
+        transition:transform .15s;
+    }}
+    .help-fab:hover {{ transform:scale(1.1); }}
+    .help-overlay {{
+        display:none; position:fixed; inset:0; z-index:9998;
+        background:rgba(0,0,0,.5); backdrop-filter:blur(4px);
+    }}
+    .help-modal {{
+        display:none; position:fixed; z-index:9999;
+        bottom:4.5rem; left:1.2rem;
+        width:min(360px, calc(100vw - 2.4rem));
+        max-height:70vh; overflow-y:auto;
+        background:var(--bg); border:1px solid var(--border);
+        border-radius:16px; padding:1.4rem;
+        box-shadow:0 8px 32px rgba(0,0,0,.4);
+        color:var(--text); font-size:.85rem; line-height:1.6;
+    }}
+    .help-close {{
+        position:absolute; top:.6rem; right:.8rem;
+        background:none; border:none; color:var(--muted);
+        font-size:1.2rem; cursor:pointer;
+    }}
+    .help-close:hover {{ color:var(--text); }}
+    #help-toggle:checked ~ .help-overlay {{ display:block; }}
+    #help-toggle:checked ~ .help-modal {{ display:block; }}
+    #help-toggle {{ display:none; }}
+    </style>
+    <input type="checkbox" id="help-toggle"/>
+    <label for="help-toggle" class="help-fab">{help_btn_label}</label>
+    <label for="help-toggle" class="help-overlay"></label>
+    <div class="help-modal">
+        <label for="help-toggle" class="help-close">\u2715</label>
+        {help_content}
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
