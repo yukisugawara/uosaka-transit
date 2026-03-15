@@ -372,27 +372,83 @@ def _render_campus_row(role: str, selected_campus: str, disabled_campus: str = "
 st.markdown(f"**\U0001F4CD {HERE[lang]}**")
 _render_campus_row("from", origin)
 
-# bus stop sub-buttons for Suita origin
+# bus stop selector (Suita has 3 stops in order)
 bus_stops = get_bus_stops(origin) if origin != NONE else []
 if bus_stops:
-    stop_label = t("bus_stop_label", lang)
-    st.markdown(f"**\U0001F68F {stop_label}**")
-    all_label = t("all_stops", lang)
-    all_stops_list = [{"id": None, "name_t": all_label}] + [
-        {"id": bs["id"], "name_t": t_place(bs["name"], lang)} for bs in bus_stops
-    ]
-    bs_cols = st.columns(len(all_stops_list))
-    for j, bs in enumerate(all_stops_list):
+    # show stop order based on route direction
+    STOP_ORDER_LABEL = {
+        "ja": "吹田キャンパス内の停留所順",
+        "en": "Bus stops in Suita Campus",
+    }
+    stop_order_text = "コンベンションセンター前 → 工学部前 → 人間科学部前"
+    stop_order_en = "Convention Center → Engineering → Human Sciences"
+    order_display = stop_order_text if lang == "ja" else stop_order_en
+
+    st.markdown(
+        f'<div style="font-size:.8rem;color:var(--muted);margin-bottom:.3rem;">'
+        f'\U0001F68F {STOP_ORDER_LABEL[lang]}: <b>{order_display}</b></div>',
+        unsafe_allow_html=True,
+    )
+
+    # stop filter buttons (no "all" option)
+    pick_stop_label = {"ja": "乗車する停留所を選択", "en": "Select your stop"}
+    st.markdown(f"**{pick_stop_label[lang]}**")
+    bs_cols = st.columns(len(bus_stops))
+    for j, bs in enumerate(bus_stops):
         with bs_cols[j]:
+            bs_name = t_place(bs["name"], lang)
             is_sel = (from_stop == bs["id"])
-            lbl = f"\u2714 {bs['name_t']}" if is_sel else bs["name_t"]
+            lbl = f"\u2714 {bs_name}" if is_sel else bs_name
             if st.button(lbl, key=f"bs_{bs['id']}", use_container_width=True, disabled=is_sel):
                 st.session_state.from_stop = bs["id"]
                 st.rerun()
 
+# bus stop map help (all campuses)
+BUS_MAP_FILES = {
+    "豊中キャンパス": "bus-map/map_bus_toyonaka.pdf",
+    "吹田キャンパス": "bus-map/map_bus_suita.pdf",
+    "箕面キャンパス": "bus-map/map_bus_mino2021.pdf",
+}
+if origin != NONE and origin in BUS_MAP_FILES:
+    help_label = {"ja": "\U0001F5FA バス停の場所を確認", "en": "\U0001F5FA Bus stop locations"}
+    with st.expander(help_label[lang]):
+        try:
+            import fitz  # PyMuPDF
+            doc = fitz.open(BUS_MAP_FILES[origin])
+            page = doc[0]
+            pix = page.get_pixmap(dpi=150)
+            img_bytes = pix.tobytes("png")
+            st.image(img_bytes, use_container_width=True)
+            doc.close()
+        except ImportError:
+            st.image(BUS_MAP_FILES[origin], use_container_width=True)
+        except Exception:
+            link = "https://www.osaka-u.ac.jp/ja/access/bus"
+            map_link_label = {"ja": "公式サイトで確認", "en": "View on official site"}
+            st.markdown(f"[{map_link_label[lang]}]({link})")
+
 # --- Destination ---
 st.markdown(f"**\U0001F3AF {GOAL[lang]}**")
 _render_campus_row("to", destination, disabled_campus=origin)
+
+# bus stop map for destination
+if destination != NONE and destination in BUS_MAP_FILES:
+    help_label_d = {"ja": "\U0001F5FA 到着キャンパスのバス停", "en": "\U0001F5FA Destination bus stops"}
+    with st.expander(help_label_d[lang]):
+        try:
+            import fitz
+            doc = fitz.open(BUS_MAP_FILES[destination])
+            page = doc[0]
+            pix = page.get_pixmap(dpi=150)
+            img_bytes = pix.tobytes("png")
+            st.image(img_bytes, use_container_width=True)
+            doc.close()
+        except ImportError:
+            st.image(BUS_MAP_FILES[destination], use_container_width=True)
+        except Exception:
+            link = "https://www.osaka-u.ac.jp/ja/access/bus"
+            map_link_label = {"ja": "公式サイトで確認", "en": "View on official site"}
+            st.markdown(f"[{map_link_label[lang]}]({link})")
 
 # --- Swap ---
 if origin != NONE and destination != NONE:
