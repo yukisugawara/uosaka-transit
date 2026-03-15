@@ -312,7 +312,7 @@ def _photo_card(campus: str, role: str, selected: bool, disabled: bool = False) 
         border = f"3px solid {border_col}"
         shadow = f"0 0 14px {'rgba(167,139,250,.5)' if role == 'from' else 'rgba(52,211,153,.5)'}"
         overlay = "rgba(0,0,0,.35)"
-        badge = f'<div style="position:absolute;top:6px;right:6px;background:{border_col};color:#fff;font-size:.6rem;font-weight:800;padding:1px 6px;border-radius:99px;">\u2714</div>'
+        badge = ""
     elif disabled:
         border = "2px solid var(--dim)"
         shadow = "none"
@@ -328,7 +328,7 @@ def _photo_card(campus: str, role: str, selected: bool, disabled: bool = False) 
         f'border:{border};box-shadow:{shadow};aspect-ratio:16/10;">'
         f'<img src="data:image/jpeg;base64,{b64}" style="width:100%;height:100%;object-fit:cover;display:block;"/>'
         f'<div style="position:absolute;inset:0;background:{overlay};display:flex;align-items:center;justify-content:center;">'
-        f'<span style="color:#fff;font-weight:800;font-size:1rem;text-shadow:0 1px 4px rgba(0,0,0,.6);">{CAMPUS_EMOJI[campus]} {name}</span>'
+        f'<span style="color:#fff;font-weight:800;font-size:1rem;text-shadow:0 1px 4px rgba(0,0,0,.6);">{name}</span>'
         f'</div>{badge}</div>'
     )
 
