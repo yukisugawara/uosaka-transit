@@ -65,7 +65,7 @@ def test_get_line_name():
 
 def test_suspension_weekend():
     from datetime import date
-    sus, reason = is_shuttle_suspended(date(2026, 1, 3))  # 土曜
+    sus, reason = is_shuttle_suspended(date(2025, 6, 7))  # 通常の土曜
     assert sus is True
     assert "土日" in reason
 

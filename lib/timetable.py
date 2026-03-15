@@ -49,19 +49,17 @@ def is_shuttle_suspended(target: date) -> tuple[bool, str]:
     Returns:
         (True/False, 理由文字列)
     """
-    # 土日
-    if target.weekday() >= 5:
-        return True, "土日のため運休"
-
-    # 祝日判定は省略（データに含まれないため）
-
-    # カレンダー運休日
+    # カレンダー運休日を先にチェック（休業期間中の土日は休業理由を表示）
     data = load_timetables()
     for period in data["shuttle_bus"].get("suspension_dates", []):
         start = date.fromisoformat(period["from"])
         end = date.fromisoformat(period["to"])
         if start <= target <= end:
             return True, period["reason"]
+
+    # 土日
+    if target.weekday() >= 5:
+        return True, "土日のため運休"
 
     return False, ""
 

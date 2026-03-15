@@ -85,7 +85,10 @@ _css_body = """
   background-size:200% auto;
   -webkit-background-clip:text; -webkit-text-fill-color:transparent;
   animation:grad 4s linear infinite;
+  line-height:1;
 }
+/* pull toggle buttons up to align with logo row */
+.hdr-btn-row { margin-top:-2.2rem; margin-bottom:.6rem; }
 /* ---- section card ---- */
 .sec {
   background:var(--card);
@@ -213,20 +216,28 @@ st.markdown(_css_head + _css_body, unsafe_allow_html=True)
 # ================================================================== #
 #  Header: logo + lang toggle
 # ================================================================== #
-c_logo, c_theme, c_lang = st.columns([6, 1, 1])
-with c_logo:
-    st.markdown('<span class="logo">U-Osaka Transit</span>', unsafe_allow_html=True)
+theme_icon = "\u2600\uFE0F" if is_dark else "\U0001F319"
+lang_label = "EN" if lang == "ja" else "JP"
+
+st.markdown(
+    '<div style="display:flex;align-items:center;justify-content:space-between;padding:.4rem 0;">'
+    '<span class="logo">U-Osaka Transit</span>'
+    '<div id="hdr-btns" style="display:flex;gap:.4rem;"></div>'
+    '</div>',
+    unsafe_allow_html=True,
+)
+st.markdown('<div class="hdr-btn-row">', unsafe_allow_html=True)
+_, _, c_theme, c_lang = st.columns([5, 3, 1, 1])
 with c_theme:
-    theme_icon = "\u2600\uFE0F" if is_dark else "\U0001F319"
     if st.button(theme_icon, key="theme_btn", use_container_width=True):
         st.session_state.theme = "light" if is_dark else "dark"
         st.rerun()
 with c_lang:
-    lang_label = "EN" if lang == "ja" else "JP"
     if st.button(lang_label, key="lang_btn", use_container_width=True):
         st.session_state.lang = "en" if lang == "ja" else "ja"
         st.rerun()
 lang = st.session_state.lang
+st.markdown('</div>', unsafe_allow_html=True)
 
 # ================================================================== #
 #  Section 1 — Route selector + SVG map
