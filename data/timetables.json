@@ -1,0 +1,619 @@
+{
+  "campuses": {
+    "豊中キャンパス": {
+      "id": "toyonaka",
+      "nearby_stations": [
+        {
+          "station_id": "ishibashi",
+          "walk_min": 15
+        },
+        {
+          "station_id": "shibahara",
+          "walk_min": 10
+        }
+      ]
+    },
+    "吹田キャンパス": {
+      "id": "suita",
+      "nearby_stations": [
+        {
+          "station_id": "handai_byoinmae",
+          "walk_min": 5
+        },
+        {
+          "station_id": "kita_senri",
+          "walk_min": 20
+        },
+        {
+          "station_id": "handai_honbu",
+          "walk_min": 3
+        }
+      ],
+      "bus_stops": [
+        {
+          "id": "suita_human",
+          "name": "人間科学部前"
+        },
+        {
+          "id": "suita_eng",
+          "name": "工学部前"
+        },
+        {
+          "id": "suita_conv",
+          "name": "コンベンションセンター前"
+        }
+      ]
+    },
+    "箕面キャンパス": {
+      "id": "minoh",
+      "nearby_stations": [
+        {
+          "station_id": "minoh_funaba",
+          "walk_min": 3
+        }
+      ]
+    }
+  },
+  "stations": {
+    "ishibashi": {
+      "name": "石橋阪大前",
+      "lines": [
+        "hankyu_takarazuka"
+      ]
+    },
+    "shibahara": {
+      "name": "柴原阪大前",
+      "lines": [
+        "monorail"
+      ]
+    },
+    "handai_byoinmae": {
+      "name": "阪大病院前",
+      "lines": [
+        "monorail"
+      ]
+    },
+    "kita_senri": {
+      "name": "北千里",
+      "lines": [
+        "hankyu_senri"
+      ]
+    },
+    "senri_chuo": {
+      "name": "千里中央",
+      "lines": [
+        "monorail",
+        "kita_osaka_kyuko",
+        "hankyu_bus"
+      ]
+    },
+    "minoh_funaba": {
+      "name": "箕面船場阪大前",
+      "lines": [
+        "kita_osaka_kyuko"
+      ]
+    },
+    "yamada": {
+      "name": "山田",
+      "lines": [
+        "monorail",
+        "hankyu_senri"
+      ]
+    },
+    "hotarugaike": {
+      "name": "蛍池",
+      "lines": [
+        "monorail",
+        "hankyu_takarazuka"
+      ]
+    },
+    "handai_honbu": {
+      "name": "阪大本部前",
+      "lines": [
+        "hankyu_bus"
+      ]
+    }
+  },
+  "lines": {
+    "monorail": {
+      "name": "大阪モノレール",
+      "type": "train"
+    },
+    "hankyu_takarazuka": {
+      "name": "阪急宝塚線",
+      "type": "train"
+    },
+    "hankyu_senri": {
+      "name": "阪急千里線",
+      "type": "train"
+    },
+    "kita_osaka_kyuko": {
+      "name": "北大阪急行",
+      "type": "train"
+    },
+    "hankyu_bus": {
+      "name": "阪急バス",
+      "type": "bus"
+    }
+  },
+  "train_segments": [
+    {
+      "line": "monorail",
+      "from": "shibahara",
+      "to": "hotarugaike",
+      "duration_min": 3,
+      "fare": 200,
+      "first_departure": "05:39",
+      "last_departure": "23:56",
+      "frequency_min": 10
+    },
+    {
+      "line": "monorail",
+      "from": "hotarugaike",
+      "to": "shibahara",
+      "duration_min": 3,
+      "fare": 200,
+      "first_departure": "05:45",
+      "last_departure": "23:56",
+      "frequency_min": 10
+    },
+    {
+      "line": "monorail",
+      "from": "shibahara",
+      "to": "senri_chuo",
+      "duration_min": 6,
+      "fare": 250,
+      "first_departure": "05:45",
+      "last_departure": "23:56",
+      "frequency_min": 10
+    },
+    {
+      "line": "monorail",
+      "from": "senri_chuo",
+      "to": "shibahara",
+      "duration_min": 6,
+      "fare": 250,
+      "first_departure": "05:39",
+      "last_departure": "23:50",
+      "frequency_min": 10
+    },
+    {
+      "line": "monorail",
+      "from": "shibahara",
+      "to": "yamada",
+      "duration_min": 9,
+      "fare": 290,
+      "first_departure": "05:45",
+      "last_departure": "23:56",
+      "frequency_min": 10
+    },
+    {
+      "line": "monorail",
+      "from": "yamada",
+      "to": "shibahara",
+      "duration_min": 9,
+      "fare": 290,
+      "first_departure": "05:39",
+      "last_departure": "23:47",
+      "frequency_min": 10
+    },
+    {
+      "line": "monorail",
+      "from": "shibahara",
+      "to": "handai_byoinmae",
+      "duration_min": 20,
+      "fare": 380,
+      "first_departure": "05:45",
+      "last_departure": "23:30",
+      "frequency_min": 10
+    },
+    {
+      "line": "monorail",
+      "from": "handai_byoinmae",
+      "to": "shibahara",
+      "duration_min": 20,
+      "fare": 380,
+      "first_departure": "05:43",
+      "last_departure": "23:30",
+      "frequency_min": 10
+    },
+    {
+      "line": "monorail",
+      "from": "handai_byoinmae",
+      "to": "senri_chuo",
+      "duration_min": 15,
+      "fare": 290,
+      "first_departure": "05:43",
+      "last_departure": "23:41",
+      "frequency_min": 10
+    },
+    {
+      "line": "monorail",
+      "from": "senri_chuo",
+      "to": "handai_byoinmae",
+      "duration_min": 15,
+      "fare": 290,
+      "first_departure": "05:39",
+      "last_departure": "23:30",
+      "frequency_min": 10
+    },
+    {
+      "line": "monorail",
+      "from": "handai_byoinmae",
+      "to": "yamada",
+      "duration_min": 10,
+      "fare": 250,
+      "first_departure": "05:43",
+      "last_departure": "23:41",
+      "frequency_min": 10
+    },
+    {
+      "line": "monorail",
+      "from": "yamada",
+      "to": "handai_byoinmae",
+      "duration_min": 10,
+      "fare": 250,
+      "first_departure": "05:45",
+      "last_departure": "23:30",
+      "frequency_min": 10
+    },
+    {
+      "line": "kita_osaka_kyuko",
+      "from": "senri_chuo",
+      "to": "minoh_funaba",
+      "duration_min": 3,
+      "fare": 160,
+      "first_departure": "05:26",
+      "last_departure": "23:57",
+      "frequency_min": 8
+    },
+    {
+      "line": "kita_osaka_kyuko",
+      "from": "minoh_funaba",
+      "to": "senri_chuo",
+      "duration_min": 3,
+      "fare": 160,
+      "first_departure": "05:30",
+      "last_departure": "23:53",
+      "frequency_min": 8
+    },
+    {
+      "line": "hankyu_senri",
+      "from": "yamada",
+      "to": "kita_senri",
+      "duration_min": 3,
+      "fare": 170,
+      "first_departure": "05:25",
+      "last_departure": "23:58",
+      "frequency_min": 8
+    },
+    {
+      "line": "hankyu_senri",
+      "from": "kita_senri",
+      "to": "yamada",
+      "duration_min": 3,
+      "fare": 170,
+      "first_departure": "05:22",
+      "last_departure": "23:55",
+      "frequency_min": 8
+    },
+    {
+      "line": "hankyu_takarazuka",
+      "from": "ishibashi",
+      "to": "hotarugaike",
+      "duration_min": 2,
+      "fare": 170,
+      "first_departure": "05:15",
+      "last_departure": "00:05",
+      "frequency_min": 7
+    },
+    {
+      "line": "hankyu_takarazuka",
+      "from": "hotarugaike",
+      "to": "ishibashi",
+      "duration_min": 2,
+      "fare": 170,
+      "first_departure": "05:18",
+      "last_departure": "00:08",
+      "frequency_min": 7
+    },
+    {
+      "line": "hankyu_bus",
+      "from": "senri_chuo",
+      "to": "handai_honbu",
+      "duration_min": 13,
+      "fare": 250,
+      "first_departure": "07:19",
+      "last_departure": "17:09",
+      "frequency_min": 15
+    },
+    {
+      "line": "hankyu_bus",
+      "from": "handai_honbu",
+      "to": "senri_chuo",
+      "duration_min": 23,
+      "fare": 250,
+      "first_departure": "08:57",
+      "last_departure": "19:30",
+      "frequency_min": 30
+    }
+  ],
+  "shuttle_bus": {
+    "fare": 0,
+    "weekday_only": true,
+    "revision": "2025-04-01",
+    "routes": [
+      {
+        "route_name": "豊中―吹田線（豊中学舎発）",
+        "from_campus": "豊中キャンパス",
+        "to_campus": "吹田キャンパス",
+        "duration_min": 25,
+        "timetable": [
+          "08:00",
+          "08:05",
+          "08:10",
+          "08:45",
+          "09:00",
+          "09:20",
+          "09:45",
+          "09:50",
+          "10:40",
+          "10:50",
+          "11:30",
+          "12:05",
+          "12:10",
+          "12:40",
+          "12:45",
+          "12:55",
+          "13:35",
+          "14:25",
+          "15:10",
+          "15:35",
+          "16:00",
+          "16:30",
+          "16:55",
+          "17:25",
+          "17:45",
+          "18:00",
+          "18:30",
+          "18:55",
+          "19:25",
+          "20:10"
+        ],
+        "from_stop": "toyonaka"
+      },
+      {
+        "route_name": "吹田―豊中線（工学部前発）",
+        "from_campus": "吹田キャンパス",
+        "to_campus": "豊中キャンパス",
+        "duration_min": 25,
+        "timetable": [
+          "07:55",
+          "08:30",
+          "08:55",
+          "09:20",
+          "09:30",
+          "10:00",
+          "10:40",
+          "11:15",
+          "11:20",
+          "12:10",
+          "12:15",
+          "12:35",
+          "12:40",
+          "13:35",
+          "14:15",
+          "15:10",
+          "15:15",
+          "16:00",
+          "16:05",
+          "16:55",
+          "17:00",
+          "17:25",
+          "18:05",
+          "18:30",
+          "18:35",
+          "19:00",
+          "19:25",
+          "20:10"
+        ],
+        "from_stop": "suita_eng",
+        "to_stop": "toyonaka"
+      },
+      {
+        "route_name": "吹田―豊中線（人間科学部前発）",
+        "from_campus": "吹田キャンパス",
+        "to_campus": "豊中キャンパス",
+        "duration_min": 25,
+        "timetable": [
+          "08:00",
+          "08:35",
+          "09:00",
+          "09:25",
+          "09:35",
+          "10:05",
+          "10:45",
+          "11:20",
+          "11:25",
+          "12:15",
+          "12:20",
+          "12:40",
+          "12:45",
+          "13:40",
+          "14:20",
+          "15:15",
+          "15:20",
+          "16:05",
+          "16:10",
+          "17:00",
+          "17:05",
+          "17:30",
+          "18:10",
+          "18:35",
+          "18:40",
+          "19:05",
+          "19:30",
+          "20:15"
+        ],
+        "from_stop": "suita_human",
+        "to_stop": "toyonaka"
+      },
+      {
+        "route_name": "豊中―箕面線（豊中学舎発）",
+        "from_campus": "豊中キャンパス",
+        "to_campus": "箕面キャンパス",
+        "duration_min": 15,
+        "timetable": [
+          "08:15",
+          "09:20",
+          "09:55",
+          "10:00",
+          "11:30",
+          "12:15",
+          "12:40",
+          "13:05",
+          "13:35",
+          "14:25",
+          "15:10",
+          "15:45",
+          "16:00",
+          "16:40",
+          "17:20",
+          "17:25",
+          "17:40",
+          "18:15",
+          "19:00",
+          "19:25",
+          "20:10"
+        ],
+        "from_stop": "toyonaka",
+        "to_stop": "minoh"
+      },
+      {
+        "route_name": "箕面―豊中線（箕面学舎発）",
+        "from_campus": "箕面キャンパス",
+        "to_campus": "豊中キャンパス",
+        "duration_min": 20,
+        "timetable": [
+          "08:20",
+          "08:35",
+          "08:55",
+          "09:20",
+          "10:15",
+          "10:25",
+          "11:05",
+          "11:40",
+          "12:35",
+          "13:05",
+          "14:00",
+          "14:40",
+          "15:10",
+          "15:15",
+          "16:05",
+          "16:30",
+          "16:55",
+          "17:00",
+          "17:40",
+          "18:00",
+          "18:30",
+          "18:35",
+          "19:25",
+          "19:50",
+          "20:35"
+        ],
+        "from_stop": "minoh",
+        "to_stop": "toyonaka"
+      },
+      {
+        "route_name": "箕面―吹田線（箕面学舎発）",
+        "from_campus": "箕面キャンパス",
+        "to_campus": "吹田キャンパス",
+        "duration_min": 20,
+        "timetable": [
+          "07:35",
+          "09:40",
+          "11:50",
+          "13:00",
+          "13:55",
+          "14:45",
+          "15:30",
+          "16:20",
+          "17:45",
+          "19:45",
+          "20:30"
+        ],
+        "from_stop": "minoh"
+      },
+      {
+        "route_name": "吹田―箕面線（吹田学舎発）",
+        "from_campus": "吹田キャンパス",
+        "to_campus": "箕面キャンパス",
+        "duration_min": 15,
+        "from_stop": "suita_eng",
+        "timetable": [
+          "08:05",
+          "08:40",
+          "09:05",
+          "10:10",
+          "10:50",
+          "11:25",
+          "12:50",
+          "13:45",
+          "14:25",
+          "16:15",
+          "18:15",
+          "19:10",
+          "19:35",
+          "20:20"
+        ]
+      }
+    ],
+    "suspension_dates": [
+      {
+        "from": "2025-04-01",
+        "to": "2025-04-09",
+        "reason": "春季休業"
+      },
+      {
+        "from": "2025-05-01",
+        "to": "2025-05-02",
+        "reason": "大学行事"
+      },
+      {
+        "from": "2025-08-08",
+        "to": "2025-09-30",
+        "reason": "夏季休業"
+      },
+      {
+        "from": "2025-10-31",
+        "to": "2025-10-31",
+        "reason": "大学行事"
+      },
+      {
+        "from": "2025-11-04",
+        "to": "2025-11-04",
+        "reason": "大学行事"
+      },
+      {
+        "from": "2025-11-27",
+        "to": "2025-11-27",
+        "reason": "大学行事"
+      },
+      {
+        "from": "2025-12-29",
+        "to": "2026-01-03",
+        "reason": "冬季休業"
+      },
+      {
+        "from": "2026-01-16",
+        "to": "2026-01-16",
+        "reason": "大学行事"
+      },
+      {
+        "from": "2026-02-09",
+        "to": "2026-03-31",
+        "reason": "春季休業"
+      }
+    ]
+  }
+}
