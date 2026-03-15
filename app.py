@@ -277,51 +277,78 @@ sec1_title = "ルート選択" if lang == "ja" else "SELECT ROUTE"
 st.markdown(f'<div class="sec sec-route"><div class="sec-title"><span class="sec-title-icon">\U0001F4CD</span>{sec1_title}</div>', unsafe_allow_html=True)
 
 NONE = "--"
-_pick_msg = "選択してください" if lang == "ja" else "Select..."
 
-# check for pending swap
-_swap_from = st.session_state.pop("_swap_from", None)
-_swap_to = st.session_state.pop("_swap_to", None)
+# session state for origin / destination / bus stop
+if "origin" not in st.session_state:
+    st.session_state.origin = NONE
+if "destination" not in st.session_state:
+    st.session_state.destination = NONE
+if "from_stop" not in st.session_state:
+    st.session_state.from_stop = None
 
-from_opts = [NONE] + CAMPUSES
-_from_idx = from_opts.index(_swap_from) if _swap_from in from_opts else 0
+origin = st.session_state.origin
+destination = st.session_state.destination
+from_stop = st.session_state.from_stop
 
-col_f, col_t = st.columns(2)
-with col_f:
-    origin = st.selectbox(
-        f"\U0001F4CD {HERE[lang]}", from_opts, index=_from_idx,
-        format_func=lambda c: _pick_msg if c == NONE else f"{CAMPUS_EMOJI[c]} {_s(c)}",
-        key="o")
-with col_t:
-    to_opts = [NONE] + ([c for c in CAMPUSES if c != origin] if origin != NONE else CAMPUSES)
-    _to_idx = to_opts.index(_swap_to) if _swap_to in to_opts else 0
-    destination = st.selectbox(
-        f"\U0001F3AF {GOAL[lang]}", to_opts, index=_to_idx,
-        format_func=lambda c: _pick_msg if c == NONE else f"{CAMPUS_EMOJI[c]} {_s(c)}",
-        key="d")
+# --- Origin buttons ---
+st.markdown(f"**\U0001F4CD {HERE[lang]}**")
+cols_o = st.columns(3)
+for i, c in enumerate(MAP_ORDER):
+    with cols_o[i]:
+        is_sel = (origin == c)
+        label = f"\u2714 {_s(c)}" if is_sel else f"{CAMPUS_EMOJI[c]} {_s(c)}"
+        if st.button(label, key=f"o_{c}", use_container_width=True, disabled=is_sel):
+            st.session_state.origin = c
+            st.session_state.from_stop = None
+            # clear destination if same
+            if st.session_state.destination == c:
+                st.session_state.destination = NONE
+            st.rerun()
 
-# swap button
+# bus stop sub-buttons for Suita origin
+bus_stops = get_bus_stops(origin) if origin != NONE else []
+if bus_stops:
+    stop_label = t("bus_stop_label", lang)
+    st.markdown(f"**{stop_label}**")
+    all_label = t("all_stops", lang)
+    stop_cols = st.columns(len(bus_stops) + 1)
+    with stop_cols[0]:
+        is_all = (from_stop is None)
+        if st.button(f"\u2714 {all_label}" if is_all else all_label,
+                     key="bs_all", use_container_width=True, disabled=is_all):
+            st.session_state.from_stop = None
+            st.rerun()
+    for j, bs in enumerate(bus_stops):
+        with stop_cols[j + 1]:
+            bs_name = t_place(bs["name"], lang)
+            is_sel = (from_stop == bs["id"])
+            if st.button(f"\u2714 {bs_name}" if is_sel else bs_name,
+                         key=f"bs_{bs['id']}", use_container_width=True, disabled=is_sel):
+                st.session_state.from_stop = bs["id"]
+                st.rerun()
+
+# --- Destination buttons ---
+st.markdown(f"**\U0001F3AF {GOAL[lang]}**")
+cols_d = st.columns(3)
+for i, c in enumerate(MAP_ORDER):
+    with cols_d[i]:
+        is_sel = (destination == c)
+        disabled = is_sel or (c == origin)
+        label = f"\u2714 {_s(c)}" if is_sel else f"{CAMPUS_EMOJI[c]} {_s(c)}"
+        if c == origin:
+            label = f"\U0001F6AB {_s(c)}"
+        if st.button(label, key=f"d_{c}", use_container_width=True, disabled=disabled):
+            st.session_state.destination = c
+            st.rerun()
+
+# --- Swap button ---
 if origin != NONE and destination != NONE:
     swap_label = "\U0001F504 入れ替え" if lang == "ja" else "\U0001F504 Swap"
     if st.button(swap_label, key="swap"):
-        # can't assign directly to widget-bound keys; store swap targets separately
-        st.session_state["_swap_from"] = destination
-        st.session_state["_swap_to"] = origin
-        # remove widget keys so they pick up defaults on rerun
-        st.session_state.pop("o", None)
-        st.session_state.pop("d", None)
-        st.session_state.pop("bs", None)
+        st.session_state.origin = destination
+        st.session_state.destination = origin
+        st.session_state.from_stop = None
         st.rerun()
-
-# bus stop sub-selector
-from_stop = None
-bus_stops = get_bus_stops(origin) if origin != NONE else []
-if bus_stops:
-    sids = [None] + [s["id"] for s in bus_stops]
-    slabels = [t("all_stops", lang)] + [t_place(s["name"], lang) for s in bus_stops]
-    si = st.selectbox(t("bus_stop_label", lang), range(len(sids)), index=0,
-                      format_func=lambda i: slabels[i], key="bs")
-    from_stop = sids[si]
 
 # SVG map — viewBox 300x70, nodes at x=45/150/255, r=14
 MX = {"豊中キャンパス": 45, "箕面キャンパス": 150, "吹田キャンパス": 255}
