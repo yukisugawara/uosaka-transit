@@ -708,7 +708,14 @@ if destination != NONE and destination in CAMPUS_MAP_FILE:
     st.image(CAMPUS_MAP_FILE[destination], use_container_width=True)
 
 updated = "最終更新: 2025/4/1" if lang == "ja" else "Last updated: 2025/4/1"
+source_label = (
+    'キャンパスマップ・バス停マップは<a href="https://www.osaka-u.ac.jp/ja/access/top" '
+    'target="_blank" style="color:var(--purple);">大阪大学アクセスマップ</a>より引用'
+    if lang == "ja" else
+    'Campus &amp; bus stop maps from <a href="https://www.osaka-u.ac.jp/ja/access/top" '
+    'target="_blank" style="color:var(--purple);">Osaka University Access Map</a>'
+)
 st.markdown(
-    f'<div class="ft">{t("footer", lang)}<br>{updated}</div>',
+    f'<div class="ft">{t("footer", lang)}<br>{updated}<br>{source_label}</div>',
     unsafe_allow_html=True,
 )
