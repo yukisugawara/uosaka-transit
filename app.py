@@ -182,7 +182,17 @@ div[data-testid="stSelectbox"] > div > div {
 }
 [data-testid="stSelectbox"] label,
 [data-testid="stCheckbox"] label,
-[data-testid="stDateInput"] label { color:var(--muted)!important; font-weight:600!important; font-size:.82rem!important; }
+[data-testid="stCheckbox"] span,
+[data-testid="stCheckbox"] p,
+[data-testid="stDateInput"] label,
+[data-testid="stTimeInput"] label { color:var(--muted)!important; font-weight:600!important; font-size:.82rem!important; }
+/* ensure all streamlit text inherits theme color */
+[data-testid="stAppViewContainer"] p,
+[data-testid="stAppViewContainer"] span,
+[data-testid="stAppViewContainer"] label,
+[data-testid="stAppViewContainer"] div { color: inherit; }
+[data-testid="stMarkdownContainer"] p { color:var(--text)!important; }
+[data-testid="stWidgetLabel"] p { color:var(--muted)!important; }
 
 button[kind="primary"] {
   background:linear-gradient(135deg,var(--purple),var(--blue))!important;
