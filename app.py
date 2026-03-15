@@ -61,7 +61,7 @@ _css_head = (
     "  font-family:'Noto Sans JP','Inter',sans-serif !important;"
     "  background:var(--bg-grad) !important; color:var(--text);"
     "}"
-    "[data-testid='stHeader'] { background:transparent !important; }"
+    "[data-testid='stHeader'] { display:none !important; }"
     "footer { visibility:hidden; }"
     "hr { border-color:var(--border) !important; }"
 )
