@@ -17,7 +17,9 @@ st.markdown(
 if "lang" not in st.session_state:
     st.session_state.lang = "ja"
 if "theme" not in st.session_state:
-    st.session_state.theme = "dark"
+    # default: light 6:00-17:00, dark otherwise
+    hour = datetime.now().hour
+    st.session_state.theme = "light" if 6 <= hour < 17 else "dark"
 lang = st.session_state.lang
 is_dark = st.session_state.theme == "dark"
 
