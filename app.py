@@ -717,6 +717,152 @@ if destination != NONE and destination in CAMPUS_MAP_FILE:
     )
     st.image(CAMPUS_MAP_FILE[destination], use_container_width=True)
 
+    # campus map legend
+    CAMPUS_LEGEND = {
+        "豊中キャンパス": {
+            "ja": [
+                ("①", "人文学研究科（人文学専攻 / 芸術学専攻）・文学部"),
+                ("②", "人文学研究科（言語文化学専攻）/ マルチリンガル教育センター"),
+                ("③", "法学研究科・法学部"),
+                ("④", "経済学研究科・経済学部"),
+                ("⑤", "理学研究科・理学部"),
+                ("⑥", "基礎工学研究科・基礎工学部"),
+                ("⑦", "国際公共政策研究科"),
+                ("⑧", "高等司法研究科"),
+                ("⑨", "附属図書館"),
+                ("⑩", "キャンパスライフ健康支援・相談センター（保健管理部門 豊中）"),
+                ("⑪", "数理・データ科学教育研究センター"),
+                ("⑫", "エマージングサイエンスデザインR3センター / 量子情報・量子生命研究センター / コアファシリティ機構"),
+                ("⑬", "知的基盤総合センター / 適塾記念センター / 21世紀懐徳堂"),
+                ("⑭", "総合学術博物館"),
+                ("⑮", "放射線科学基盤機構"),
+                ("⑯", "全学教育推進機構"),
+                ("⑰", "COデザインセンター"),
+            ],
+            "en": [
+                ("①", "Graduate School / School of Humanities"),
+                ("②", "Graduate School of Humanities (Linguistics) / Multilingual Education Center"),
+                ("③", "Graduate School / School of Law"),
+                ("④", "Graduate School / School of Economics"),
+                ("⑤", "Graduate School / School of Science"),
+                ("⑥", "Graduate School / School of Engineering Science"),
+                ("⑦", "Osaka School of International Public Policy"),
+                ("⑧", "School of Law (Professional)"),
+                ("⑨", "Main Library"),
+                ("⑩", "Health & Counseling Center (Toyonaka)"),
+                ("⑪", "Math & Data Science Education Center"),
+                ("⑫", "Emerging Science Design R3 Center"),
+                ("⑬", "Knowledge Hub / Tekijuku Memorial Center"),
+                ("⑭", "Museum of Osaka University"),
+                ("⑮", "Institute of Radiation Sciences"),
+                ("⑯", "Center for Education in Liberal Arts and Sciences"),
+                ("⑰", "CO Design Center"),
+            ],
+        },
+        "吹田キャンパス": {
+            "ja": [
+                ("①", "本部事務機構 / 高等共創研究院 / 国際機構 ほか"),
+                ("②", "人間科学研究科・人間科学部"),
+                ("③", "医学系研究科・医学部（医学科）"),
+                ("④", "医学系研究科・医学部（保健学科）"),
+                ("⑤", "歯学研究科・歯学部・歯学部附属病院"),
+                ("⑥", "薬学研究科・薬学部"),
+                ("⑦", "工学研究科・工学部"),
+                ("⑧", "情報科学研究科"),
+                ("⑨", "生命機能研究科"),
+                ("⑩", "連合小児発達学研究科"),
+                ("⑪", "医学部附属病院"),
+                ("⑫", "微生物病研究所"),
+                ("⑬", "産業科学研究所"),
+                ("⑭", "蛋白質研究所"),
+                ("⑮", "社会経済研究所"),
+                ("⑯", "接合科学研究所"),
+                ("⑰", "レーザー科学研究所"),
+                ("⑱", "超高圧電子顕微鏡センター"),
+                ("⑲", "環境安全研究管理センター"),
+                ("⑳", "生物工学国際交流センター"),
+                ("㉑", "キャンパスライフ健康支援・相談センター（保健管理部門 吹田）"),
+                ("㉒", "国際医工情報センター"),
+                ("㉓", "核物理研究センター"),
+                ("㉔", "D3センター / 情報推進本部"),
+                ("㉕", "D3センター / 社会技術共創研究センター / 共創機構"),
+                ("㉖", "免疫学フロンティア研究センター"),
+                ("㉗", "ヒューマン・メタバース疾患研究拠点"),
+                ("㉘", "脳情報通信融合研究センター"),
+                ("㉙", "アーカイブズ"),
+                ("㉚", "感染症総合教育研究拠点 / 先端モダリティ・DDS研究センター"),
+                ("㉛", "放射線科学基盤機構"),
+                ("㉜", "コアファシリティ機構"),
+                ("㉝", "ダイバーシティ＆インクルージョンセンター"),
+            ],
+            "en": [
+                ("①", "Administration / Advanced Research Institute"),
+                ("②", "Graduate School / School of Human Sciences"),
+                ("③", "Graduate School of Medicine (Medicine)"),
+                ("④", "Graduate School of Medicine (Health Sciences)"),
+                ("⑤", "Graduate School / School of Dentistry"),
+                ("⑥", "Graduate School / School of Pharmaceutical Sciences"),
+                ("⑦", "Graduate School / School of Engineering"),
+                ("⑧", "Graduate School of Information Science"),
+                ("⑨", "Graduate School of Frontier Biosciences"),
+                ("⑩", "United Graduate School of Child Development"),
+                ("⑪", "Osaka University Hospital"),
+                ("⑫", "Research Institute for Microbial Diseases"),
+                ("⑬", "Institute of Scientific and Industrial Research"),
+                ("⑭", "Institute for Protein Research"),
+                ("⑮", "Institute of Social and Economic Research"),
+                ("⑯", "Joining and Welding Research Institute"),
+                ("⑰", "Institute of Laser Engineering"),
+                ("⑱", "Research Center for Ultra-High Voltage Electron Microscopy"),
+                ("⑲", "Environmental Safety Center"),
+                ("⑳", "International Center for Biotechnology"),
+                ("㉑", "Health & Counseling Center (Suita)"),
+                ("㉒", "Center for Medical Engineering and Informatics"),
+                ("㉓", "Research Center for Nuclear Physics"),
+                ("㉔", "D3 Center / IT Planning"),
+                ("㉕", "D3 Center / Co-creation Bureau"),
+                ("㉖", "Immunology Frontier Research Center"),
+                ("㉗", "Human-Metaverse Disease Research Center"),
+                ("㉘", "Brain Information Communication Research Center"),
+                ("㉙", "Archives"),
+                ("㉚", "Center for Infectious Disease Research"),
+                ("㉛", "Institute of Radiation Sciences"),
+                ("㉜", "Core Facility"),
+                ("㉝", "Diversity & Inclusion Center"),
+            ],
+        },
+        "箕面キャンパス": {
+            "ja": [
+                ("①", "人文学研究科（外国学専攻 / 日本学専攻）・外国語学部"),
+                ("②", "キャンパスライフ健康支援・相談センター（箕面）"),
+                ("③", "日本語日本文化教育センター"),
+            ],
+            "en": [
+                ("①", "Graduate School of Humanities (Foreign Studies / Japanese Studies) / School of Foreign Studies"),
+                ("②", "Health & Counseling Center (Minoh)"),
+                ("③", "Japanese Language and Culture Education Center"),
+            ],
+        },
+    }
+
+    legend = CAMPUS_LEGEND.get(destination, {}).get(lang, [])
+    if legend:
+        legend_title = "施設一覧" if lang == "ja" else "Facilities"
+        with st.expander(f"\U0001F3DB {legend_title}"):
+            rows = "".join(
+                f'<tr><td style="padding:.15rem .4rem;font-weight:700;color:var(--purple);white-space:nowrap;vertical-align:top;">{num}</td>'
+                f'<td style="padding:.15rem .4rem;color:var(--text);font-size:.82rem;">{name}</td></tr>'
+                for num, name in legend
+            )
+            source_lbl = "出典" if lang == "ja" else "Source"
+            st.markdown(
+                f'<table style="border-collapse:collapse;width:100%;">{rows}</table>'
+                f'<div style="margin-top:.5rem;font-size:.7rem;color:var(--dim);">'
+                f'{source_lbl}: <a href="https://www.osaka-u.ac.jp/" target="_blank" '
+                f'style="color:var(--purple);">{"大阪大学ウェブサイト" if lang == "ja" else "Osaka University website"}</a></div>',
+                unsafe_allow_html=True,
+            )
+
 updated = "最終更新: 2025/4/1" if lang == "ja" else "Last updated: 2025/4/1"
 source_label = (
     'キャンパスマップ・バス停マップは<a href="https://www.osaka-u.ac.jp/" '
