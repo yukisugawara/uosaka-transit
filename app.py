@@ -8,6 +8,12 @@ from lib.i18n import t, t_transport, t_place, t_reason
 
 st.set_page_config(page_title="U-Osaka Transit", page_icon="\u2728", layout="centered")
 
+# Force browser tab title (overrides Streamlit's default suffix)
+st.markdown(
+    "<script>document.title='U-Osaka Transit';</script>",
+    unsafe_allow_html=True,
+)
+
 if "lang" not in st.session_state:
     st.session_state.lang = "ja"
 if "theme" not in st.session_state:
