@@ -1,6 +1,12 @@
 import streamlit as st
-from datetime import datetime, time, date
+from datetime import datetime, time, date, timezone
 from datetime import timedelta as _td
+
+JST = timezone(_td(hours=9))
+
+def _now() -> datetime:
+    """日本時間の現在時刻を返す."""
+    return datetime.now(JST).replace(tzinfo=None)
 
 from lib.search import search_routes
 from lib.timetable import get_bus_stops, get_shuttle_last_time, get_shuttle_status, is_shuttle_suspended
@@ -18,7 +24,7 @@ if "lang" not in st.session_state:
     st.session_state.lang = "ja"
 if "theme" not in st.session_state:
     # default: light 6:00-17:00, dark otherwise
-    hour = datetime.now().hour
+    hour = _now().hour
     st.session_state.theme = "light" if 6 <= hour < 17 else "dark"
 lang = st.session_state.lang
 is_dark = st.session_state.theme == "dark"
@@ -467,7 +473,7 @@ st.markdown(f'<div class="sec sec-time"><div class="sec-title"><span class="sec-
 
 use_now = st.checkbox(t("depart_now", lang), value=True)
 if use_now:
-    depart_time = datetime.now().replace(second=0, microsecond=0)
+    depart_time = _now().replace(second=0, microsecond=0)
     st.markdown(
         f'<span style="color:var(--purple);font-weight:700;font-size:1.4rem;">'
         f'{depart_time.strftime("%H:%M")}</span>',
@@ -476,8 +482,8 @@ if use_now:
 else:
     c1, c2, c3 = st.columns([3, 1, 1])
     with c1:
-        d_date = st.date_input(t("date_label", lang), value=date.today())
-    now = datetime.now()
+        d_date = st.date_input(t("date_label", lang), value=_now().date())
+    now = _now()
     with c2:
         d_h = st.selectbox("H", range(24), index=now.hour,
                             format_func=lambda h: f"{h:02d}", key="sh")
