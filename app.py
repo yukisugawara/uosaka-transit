@@ -347,9 +347,15 @@ def _render_campus_row(role: str, selected_campus: str, disabled_campus: str = "
             is_dis = (c == disabled_campus)
             # photo card (visual only)
             st.markdown(_photo_card(c, role, is_sel, is_dis), unsafe_allow_html=True)
-            # button (functional)
+            # button label based on state
+            if is_sel:
+                btn_lbl = "\u2714 " + ({"ja": "選択中", "en": "Selected"}[lang])
+            elif is_dis:
+                btn_lbl = "\u2014"
+            else:
+                btn_lbl = {"ja": "選択", "en": "Select"}[lang]
             if st.button(
-                _s(c), key=f"{role}_{c}",
+                btn_lbl, key=f"{role}_{c}",
                 use_container_width=True,
                 disabled=(is_sel or is_dis),
             ):
