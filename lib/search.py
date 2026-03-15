@@ -59,6 +59,8 @@ def search_routes(
     if not candidates:
         return []
 
+    MAX_RESULTS = 5
+
     # バス利用ルートと公共交通のみルートに分離
     bus_routes = [r for r in candidates if any("学内バス" in s.transport for s in r.segments)]
     transit_routes = [r for r in candidates if all("学内バス" not in s.transport for s in r.segments)]
@@ -70,25 +72,22 @@ def search_routes(
         best_bus = min(bus_routes, key=lambda r: (r.segments[-1].arrive, r.total_duration_min))
         results.append(best_bus)
 
-    # 公共交通: 経路パターンが異なるものを最大2件
+    # 公共交通: 経路パターン(summary)が異なるものを到着順で追加
     if transit_routes:
-        # まず最速
-        best = min(transit_routes, key=lambda r: (r.segments[-1].arrive, r.total_fare))
-        results.append(best)
-        # 経路パターン(乗る路線の組合せ)が違うものをもう1件
-        best_lines = best.summary
-        others = [r for r in transit_routes if r.summary != best_lines]
-        if others:
-            second = min(others, key=lambda r: (r.total_fare, r.segments[-1].arrive))
-            # 最速より安いか、所要時間が大きく異なる場合のみ追加
-            if second.total_fare < best.total_fare or abs(second.total_duration_min - best.total_duration_min) >= 5:
-                results.append(second)
+        transit_sorted = sorted(transit_routes, key=lambda r: (r.segments[-1].arrive, r.total_fare))
+        seen_patterns: set[str] = set()
+        for r in transit_sorted:
+            if len(results) >= MAX_RESULTS:
+                break
+            if r.summary not in seen_patterns:
+                seen_patterns.add(r.summary)
+                results.append(r)
 
     if not results:
         best = min(candidates, key=lambda r: (r.segments[-1].arrive, r.total_fare))
         results.append(best)
 
-    # 到着時刻でソート
+    # 到着時刻でソート（最速が先）
     results.sort(key=lambda r: (r.segments[-1].arrive, r.total_fare))
 
     out = []

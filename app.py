@@ -236,13 +236,14 @@ st.markdown(_css_head + _css_body, unsafe_allow_html=True)
 theme_icon = "\u2600\uFE0F" if is_dark else "\U0001F319"
 lang_label = "EN" if lang == "ja" else "JP"
 
+st.markdown(
+    '<div style="display:flex;align-items:center;justify-content:space-between;padding:.4rem 0;">'
+    '<span class="logo">U-Osaka Transit</span>'
+    '</div>',
+    unsafe_allow_html=True,
+)
 st.markdown('<div class="hdr-btn-row">', unsafe_allow_html=True)
-c_logo_btn, _, c_theme, c_lang = st.columns([5, 3, 1, 1])
-with c_logo_btn:
-    if st.button("\u2728 U-Osaka Transit", key="logo_reset", use_container_width=True):
-        for k in ["o", "d", "bs", "sh", "sm"]:
-            st.session_state.pop(k, None)
-        st.rerun()
+_, _, c_theme, c_lang = st.columns([5, 3, 1, 1])
 with c_theme:
     if st.button(theme_icon, key="theme_btn", use_container_width=True):
         st.session_state.theme = "light" if is_dark else "dark"
