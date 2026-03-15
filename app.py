@@ -234,20 +234,26 @@ _s = lambda c: CS[c][lang]  # noqa: E731
 sec1_title = "ルート選択" if lang == "ja" else "SELECT ROUTE"
 st.markdown(f'<div class="sec sec-route"><div class="sec-title"><span class="sec-title-icon">\U0001F4CD</span>{sec1_title}</div>', unsafe_allow_html=True)
 
+NONE = "--"
+_pick_msg = "選択してください" if lang == "ja" else "Select..."
+
+from_opts = [NONE] + CAMPUSES
 col_f, col_t = st.columns(2)
 with col_f:
     origin = st.selectbox(
-        f"\U0001F4CD {HERE[lang]}", CAMPUSES, index=0,
-        format_func=lambda c: f"{CAMPUS_EMOJI[c]} {_s(c)}", key="o")
+        f"\U0001F4CD {HERE[lang]}", from_opts, index=0,
+        format_func=lambda c: _pick_msg if c == NONE else f"{CAMPUS_EMOJI[c]} {_s(c)}",
+        key="o")
 with col_t:
-    dopts = [c for c in CAMPUSES if c != origin]
+    to_opts = [NONE] + ([c for c in CAMPUSES if c != origin] if origin != NONE else CAMPUSES)
     destination = st.selectbox(
-        f"\U0001F3AF {GOAL[lang]}", dopts, index=0,
-        format_func=lambda c: f"{CAMPUS_EMOJI[c]} {_s(c)}", key="d")
+        f"\U0001F3AF {GOAL[lang]}", to_opts, index=0,
+        format_func=lambda c: _pick_msg if c == NONE else f"{CAMPUS_EMOJI[c]} {_s(c)}",
+        key="d")
 
 # bus stop sub-selector
 from_stop = None
-bus_stops = get_bus_stops(origin)
+bus_stops = get_bus_stops(origin) if origin != NONE else []
 if bus_stops:
     sids = [None] + [s["id"] for s in bus_stops]
     slabels = [t("all_stops", lang)] + [t_place(s["name"], lang) for s in bus_stops]
@@ -258,14 +264,14 @@ if bus_stops:
 # SVG map — viewBox 300x70, nodes at x=45/150/255, r=14
 MX = {"豊中キャンパス": 45, "箕面キャンパス": 150, "吹田キャンパス": 255}
 CY, R = 36, 14
-ox, dx = MX[origin], MX[destination]
+has_origin = origin != NONE
+has_dest = destination != NONE
 
 nodes_svg = ""
 for c in MAP_ORDER:
     cx = MX[c]
     em, nm = CAMPUS_EMOJI[c], _s(c)
-    if c == origin:
-        # pulse ring
+    if has_origin and c == origin:
         nodes_svg += (
             f'<circle cx="{cx}" cy="{CY}" r="{R}" fill="none" stroke="#a78bfa" stroke-width=".8" opacity=".3">'
             f'<animate attributeName="r" values="{R};{R+8};{R}" dur="2.5s" repeatCount="indefinite"/>'
@@ -276,7 +282,7 @@ for c in MAP_ORDER:
             f'<text x="{cx}" y="{CY+R+10}" text-anchor="middle" font-size="7" font-weight="700" fill="#c4b5fd">{nm}</text>'
             f'<text x="{cx}" y="{CY-R-4}" text-anchor="middle" font-size="6.5" font-weight="800" fill="#c4b5fd">\U0001F4CD {HERE[lang]}</text>'
         )
-    elif c == destination:
+    elif has_dest and c == destination:
         nodes_svg += (
             f'<circle cx="{cx}" cy="{CY}" r="{R}" fill="rgba(52,211,153,.1)" stroke="#34d399" stroke-width="1.5"'
             f' style="filter:drop-shadow(0 0 4px rgba(52,211,153,.4))"/>'
@@ -291,19 +297,24 @@ for c in MAP_ORDER:
             f'<text x="{cx}" y="{CY+R+10}" text-anchor="middle" font-size="7" font-weight="600" fill="#64748b">{nm}</text>'
         )
 
-# arrow
-asx = ox + (R + 2 if dx > ox else -(R + 2))
-aex = dx + (-(R + 2) if dx > ox else (R + 2))
+# arrow (only when both selected)
+arrow_svg = ""
+if has_origin and has_dest:
+    ox, dx = MX[origin], MX[destination]
+    asx = ox + (R + 2 if dx > ox else -(R + 2))
+    aex = dx + (-(R + 2) if dx > ox else (R + 2))
+    arrow_svg = (
+        f'<defs><marker id="ah" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto">'
+        f'<polygon points="0 0,6 2,0 4" fill="#818cf8"/></marker></defs>'
+        f'<line x1="{asx}" y1="{CY}" x2="{aex}" y2="{CY}" stroke="#818cf8" stroke-width="1.5" '
+        f'stroke-dasharray="5,3" marker-end="url(#ah)" opacity=".6">'
+        f'<animate attributeName="stroke-dashoffset" values="16;0" dur="1.2s" repeatCount="indefinite"/></line>'
+    )
 
 svg = (
     f'<svg viewBox="0 0 300 70" style="width:100%;max-width:520px;display:block;margin:.3rem auto;">'
     f'<line x1="45" y1="{CY}" x2="255" y2="{CY}" stroke="rgba(255,255,255,.05)" stroke-width="1" stroke-dasharray="4,3"/>'
-    f'<defs><marker id="ah" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto">'
-    f'<polygon points="0 0,6 2,0 4" fill="#818cf8"/></marker></defs>'
-    f'<line x1="{asx}" y1="{CY}" x2="{aex}" y2="{CY}" stroke="#818cf8" stroke-width="1.5" '
-    f'stroke-dasharray="5,3" marker-end="url(#ah)" opacity=".6">'
-    f'<animate attributeName="stroke-dashoffset" values="16;0" dur="1.2s" repeatCount="indefinite"/></line>'
-    f'{nodes_svg}</svg>'
+    f'{arrow_svg}{nodes_svg}</svg>'
 )
 st.markdown(svg, unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
@@ -355,6 +366,11 @@ st.markdown('</div>', unsafe_allow_html=True)
 # ================================================================== #
 #  Search button
 # ================================================================== #
+if origin == NONE or destination == NONE:
+    hint = "現在地と行き先を選択してください" if lang == "ja" else "Select your origin and destination above"
+    st.info(hint)
+    st.stop()
+
 if origin == destination:
     st.warning(t("same_campus", lang))
     st.stop()
