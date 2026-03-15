@@ -572,23 +572,29 @@ for route in results:
 # ================================================================== #
 #  Campus map of destination
 # ================================================================== #
-CAMPUS_MAP_URL = {
-    "豊中キャンパス": "https://www.osaka-u.ac.jp/ja/access/files/toyonaka_map25.jpg",
-    "吹田キャンパス": "https://www.osaka-u.ac.jp/ja/access/files/suita-20250824.jpg",
-    "箕面キャンパス": "https://www.osaka-u.ac.jp/ja/access/files/minoh_map.jpg",
+CAMPUS_MAP_FILE = {
+    "豊中キャンパス": "map/toyonaka.jpeg",
+    "吹田キャンパス": "map/suita.jpeg",
+    "箕面キャンパス": "map/minoh.jpeg",
 }
-if destination != NONE and destination in CAMPUS_MAP_URL:
+CAMPUS_IMG_FILE = {
+    "豊中キャンパス": "image/toyonaka-image.jpeg",
+    "吹田キャンパス": "image/suita-image.jpeg",
+    "箕面キャンパス": "image/minoh-image.jpeg",
+}
+if destination != NONE and destination in CAMPUS_MAP_FILE:
+    # campus image
+    img_file = CAMPUS_IMG_FILE.get(destination)
+    if img_file:
+        st.image(img_file, use_container_width=True)
+    # campus map
     map_title = f"{_s(destination)} キャンパスマップ" if lang == "ja" else f"{_s(destination)} Campus Map"
-    map_url = CAMPUS_MAP_URL[destination]
     st.markdown(
-        f'<div style="margin-top:1rem;border-radius:14px;border:1px solid var(--border);'
-        f'background:var(--card);padding:1rem;text-align:center;">'
-        f'<div style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.5rem;">'
-        f'\U0001F5FA {map_title}</div>'
-        f'<img src="{map_url}" style="width:100%;border-radius:10px;" alt="{map_title}"/>'
-        f'</div>',
+        f'<div style="font-size:.9rem;font-weight:700;color:var(--text);margin:.8rem 0 .3rem;">'
+        f'\U0001F5FA {map_title}</div>',
         unsafe_allow_html=True,
     )
+    st.image(CAMPUS_MAP_FILE[destination], use_container_width=True)
 
 updated = "最終更新: 2025/4/1" if lang == "ja" else "Last updated: 2025/4/1"
 st.markdown(
