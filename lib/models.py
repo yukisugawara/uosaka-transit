@@ -43,6 +43,7 @@ class Route:
         return " → ".join(s.transport for s in self.segments)
 
     def to_dict(self) -> dict:
+        details = getattr(self, "_route_details", {})
         return {
             "summary": self.summary,
             "duration_min": self.total_duration_min,
@@ -56,6 +57,7 @@ class Route:
                     "arrive": s.arrive.strftime("%H:%M"),
                     "duration_min": s.duration_min,
                     "fare": s.fare,
+                    "route_detail": details.get(s.transport),
                 }
                 for s in self.segments
             ],

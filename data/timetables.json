@@ -542,7 +542,15 @@
           "19:45",
           "20:30"
         ],
-        "from_stop": "minoh"
+        "from_stop": "minoh",
+        "stops_via": [
+          "suita_conv"
+        ],
+        "to_stop": "suita_eng",
+        "route_detail": {
+          "ja": "箕面学舎 → コンベンションセンター前 → 工学部前",
+          "en": "Minoh → Convention Center → Engineering"
+        }
       },
       {
         "route_name": "吹田―箕面線（吹田学舎発）",
@@ -565,7 +573,15 @@
           "19:10",
           "19:35",
           "20:20"
-        ]
+        ],
+        "stops_via": [
+          "suita_human"
+        ],
+        "to_stop": "minoh",
+        "route_detail": {
+          "ja": "工学部前 → 人間科学部前 → 箕面学舎",
+          "en": "Engineering → Human Sciences → Minoh"
+        }
       }
     ],
     "suspension_dates": [

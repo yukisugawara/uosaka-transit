@@ -133,15 +133,21 @@ def _shuttle_direct(
     departures = get_shuttle_departures(origin, destination, depart_time, from_stop=from_stop)
     routes = []
     for dep in departures[:3]:
+        # Include route detail (stop sequence) if available
+        detail = dep.get("route_detail")
+        transport_name = f"学内バス（{dep['route_name']}）"
         seg = Segment(
-            transport=f"学内バス（{dep['route_name']}）",
+            transport=transport_name,
             from_stop=origin,
             to_stop=destination,
             depart=dep["depart"],
             arrive=dep["arrive"],
             fare=0,
         )
-        routes.append(Route(segments=[seg]))
+        route = Route(segments=[seg])
+        # attach route_detail as extra metadata
+        route._route_details = {transport_name: detail} if detail else {}
+        routes.append(route)
     return routes
 
 

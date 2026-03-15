@@ -91,9 +91,15 @@ def get_shuttle_departures(
     for route in data["shuttle_bus"]["routes"]:
         if route["from_campus"] != from_campus or route["to_campus"] != to_campus:
             continue
-        # バス停フィルタ
-        if from_stop and route.get("from_stop") and route["from_stop"] != from_stop:
-            continue
+        # バス停フィルタ: from_stop または stops_via に含まれる便を通す
+        if from_stop:
+            route_stops = set()
+            if route.get("from_stop"):
+                route_stops.add(route["from_stop"])
+            for v in route.get("stops_via", []):
+                route_stops.add(v)
+            if route_stops and from_stop not in route_stops:
+                continue
         for time_str in route["timetable"]:
             h, m = map(int, time_str.split(":"))
             depart = after.replace(hour=h, minute=m, second=0, microsecond=0)
@@ -108,6 +114,8 @@ def get_shuttle_departures(
                     "route_name": route["route_name"],
                     "from_stop": route.get("from_stop"),
                     "to_stop": route.get("to_stop"),
+                    "stops_via": route.get("stops_via", []),
+                    "route_detail": route.get("route_detail"),
                 }
             )
     results.sort(key=lambda x: x["depart"])

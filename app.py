@@ -589,9 +589,20 @@ for route in results:
             chip = ' <span style="background:linear-gradient(135deg,var(--gold),#f59e0b);color:var(--pill-free-text);font-weight:900;font-size:.7rem;padding:.05rem .4rem;border-radius:999px;">FREE</span>'
         else:
             chip = f' <span style="background:var(--chip-paid-bg);color:var(--chip-paid-text);font-weight:700;font-size:.7rem;padding:.05rem .4rem;border-radius:999px;">{s["fare"]}{uy}</span>'
+        # route detail (stop sequence) if available
+        detail_html = ""
+        rd = s.get("route_detail")
+        if rd:
+            detail_text = rd.get(lang, rd.get("ja", ""))
+            if detail_text:
+                detail_html = (
+                    f'<br><span style="font-size:.72rem;color:var(--muted);font-style:italic;">'
+                    f'\u2003\U0001F68F {detail_text}</span>'
+                )
         steps += (
             f'<div style="padding:.25rem 0;">'
-            f'<span style="font-weight:700;font-size:.9rem;color:var(--text);">{ic} {tn}</span>{chip}<br>'
+            f'<span style="font-weight:700;font-size:.9rem;color:var(--text);">{ic} {tn}</span>{chip}'
+            f'{detail_html}<br>'
             f'<span style="font-size:.8rem;color:var(--muted);">'
             f'\u2003{fn} {s["depart"]} \u2192 {ton} {s["arrive"]} \u00B7 {s["duration_min"]}{um}</span>'
             f'</div>'
