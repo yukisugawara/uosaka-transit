@@ -82,15 +82,20 @@ _css_body = """
   padding:0.6rem 0; animation:fadeIn .6s ease-out;
 }
 .logo {
-  font-family:'Righteous',sans-serif; font-size:2.2rem;
+  font-family:'Righteous',sans-serif; font-size:2.6rem;
   background:linear-gradient(90deg,var(--purple),var(--blue),var(--green));
   background-size:200% auto;
   -webkit-background-clip:text; -webkit-text-fill-color:transparent;
   animation:grad 4s linear infinite;
-  line-height:1;
+  line-height:1; cursor:pointer;
 }
-/* pull toggle buttons up to align with logo row */
-.hdr-btn-row { margin-top:-2.2rem; margin-bottom:.6rem; }
+/* header button row */
+.hdr-btn-row { margin-bottom:.4rem; }
+/* logo as button */
+[data-testid="stButton"] button[key="logo_reset"],
+button[kind="secondary"]:has(> div > p:first-child) {
+  font-family:'Righteous',sans-serif !important;
+}
 /* ---- section card ---- */
 .sec {
   background:var(--card);
@@ -231,15 +236,13 @@ st.markdown(_css_head + _css_body, unsafe_allow_html=True)
 theme_icon = "\u2600\uFE0F" if is_dark else "\U0001F319"
 lang_label = "EN" if lang == "ja" else "JP"
 
-st.markdown(
-    '<div style="display:flex;align-items:center;justify-content:space-between;padding:.4rem 0;">'
-    '<span class="logo">U-Osaka Transit</span>'
-    '<div id="hdr-btns" style="display:flex;gap:.4rem;"></div>'
-    '</div>',
-    unsafe_allow_html=True,
-)
 st.markdown('<div class="hdr-btn-row">', unsafe_allow_html=True)
-_, _, c_theme, c_lang = st.columns([5, 3, 1, 1])
+c_logo_btn, _, c_theme, c_lang = st.columns([5, 3, 1, 1])
+with c_logo_btn:
+    if st.button("\u2728 U-Osaka Transit", key="logo_reset", use_container_width=True):
+        for k in ["o", "d", "bs", "sh", "sm"]:
+            st.session_state.pop(k, None)
+        st.rerun()
 with c_theme:
     if st.button(theme_icon, key="theme_btn", use_container_width=True):
         st.session_state.theme = "light" if is_dark else "dark"
@@ -247,6 +250,9 @@ with c_theme:
 with c_lang:
     if st.button(lang_label, key="lang_btn", use_container_width=True):
         st.session_state.lang = "en" if lang == "ja" else "ja"
+        # reset selectbox caches so format_func re-renders
+        for k in ["o", "d", "bs"]:
+            st.session_state.pop(k, None)
         st.rerun()
 lang = st.session_state.lang
 st.markdown('</div>', unsafe_allow_html=True)
