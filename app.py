@@ -419,23 +419,29 @@ BUS_MAP_FILES = {
     "吹田キャンパス": "bus-map/map_bus_suita.pdf",
     "箕面キャンパス": "bus-map/map_bus_mino2021.pdf",
 }
+@st.cache_data
+def _render_pdf_page(pdf_path: str) -> bytes | None:
+    """PDFの1ページ目をPNG bytesに変換する."""
+    try:
+        import fitz
+        doc = fitz.open(pdf_path)
+        pix = doc[0].get_pixmap(dpi=150)
+        img = pix.tobytes("png")
+        doc.close()
+        return img
+    except Exception:
+        return None
+
 if origin != NONE and origin in BUS_MAP_FILES:
     help_label = {"ja": "\U0001F5FA バス停の場所を確認", "en": "\U0001F5FA Bus stop locations"}
     with st.expander(help_label[lang]):
-        try:
-            import fitz  # PyMuPDF
-            doc = fitz.open(BUS_MAP_FILES[origin])
-            page = doc[0]
-            pix = page.get_pixmap(dpi=150)
-            img_bytes = pix.tobytes("png")
-            st.image(img_bytes, use_container_width=True)
-            doc.close()
-        except ImportError:
-            st.image(BUS_MAP_FILES[origin], use_container_width=True)
-        except Exception:
+        img = _render_pdf_page(BUS_MAP_FILES[origin])
+        if img:
+            st.image(img, use_container_width=True)
+        else:
             link = "https://www.osaka-u.ac.jp/ja/access/bus"
-            map_link_label = {"ja": "公式サイトで確認", "en": "View on official site"}
-            st.markdown(f"[{map_link_label[lang]}]({link})")
+            lbl = {"ja": "公式サイトで確認", "en": "View on official site"}
+            st.markdown(f"[{lbl[lang]}]({link})")
 
 # --- Destination ---
 st.markdown(f"**\U0001F3AF {GOAL[lang]}**")
@@ -445,20 +451,13 @@ _render_campus_row("to", destination, disabled_campus=origin)
 if destination != NONE and destination in BUS_MAP_FILES:
     help_label_d = {"ja": "\U0001F5FA 到着キャンパスのバス停", "en": "\U0001F5FA Destination bus stops"}
     with st.expander(help_label_d[lang]):
-        try:
-            import fitz
-            doc = fitz.open(BUS_MAP_FILES[destination])
-            page = doc[0]
-            pix = page.get_pixmap(dpi=150)
-            img_bytes = pix.tobytes("png")
-            st.image(img_bytes, use_container_width=True)
-            doc.close()
-        except ImportError:
-            st.image(BUS_MAP_FILES[destination], use_container_width=True)
-        except Exception:
+        img_d = _render_pdf_page(BUS_MAP_FILES[destination])
+        if img_d:
+            st.image(img_d, use_container_width=True)
+        else:
             link = "https://www.osaka-u.ac.jp/ja/access/bus"
-            map_link_label = {"ja": "公式サイトで確認", "en": "View on official site"}
-            st.markdown(f"[{map_link_label[lang]}]({link})")
+            lbl = {"ja": "公式サイトで確認", "en": "View on official site"}
+            st.markdown(f"[{lbl[lang]}]({link})")
 
 # --- Swap ---
 if origin != NONE and destination != NONE:
