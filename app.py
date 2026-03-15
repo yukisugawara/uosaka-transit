@@ -290,58 +290,110 @@ origin = st.session_state.origin
 destination = st.session_state.destination
 from_stop = st.session_state.from_stop
 
-# --- Origin buttons ---
+def _campus_card(campus: str, role: str, selected: bool, disabled: bool = False) -> str:
+    """HTML card for a campus. role='from'|'to'."""
+    em = CAMPUS_EMOJI[campus]
+    name = _s(campus)
+    if selected:
+        color = "var(--purple)" if role == "from" else "var(--green)"
+        bg = "rgba(167,139,250,.12)" if role == "from" else "rgba(52,211,153,.12)"
+        border = f"2px solid {color}"
+        shadow = f"0 0 12px {'rgba(167,139,250,.4)' if role == 'from' else 'rgba(52,211,153,.4)'}"
+        check = " \u2714"
+    elif disabled:
+        color = "var(--dim)"
+        bg = "transparent"
+        border = "1px dashed var(--dim)"
+        shadow = "none"
+        check = ""
+    else:
+        color = "var(--muted)"
+        bg = "var(--card)"
+        border = "1px solid var(--border)"
+        shadow = "none"
+        check = ""
+    return (
+        f'<div style="text-align:center;padding:.6rem .3rem;border-radius:14px;'
+        f'border:{border};background:{bg};box-shadow:{shadow};transition:all .2s;">'
+        f'<div style="font-size:1.5rem;line-height:1;">{em}</div>'
+        f'<div style="font-size:.82rem;font-weight:700;color:{color};margin-top:.2rem;">{name}{check}</div>'
+        f'</div>'
+    )
+
+# --- Origin ---
 st.markdown(f"**\U0001F4CD {HERE[lang]}**")
+cards_o = ""
+for c in MAP_ORDER:
+    cards_o += _campus_card(c, "from", origin == c)
+st.markdown(
+    f'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:.3rem;">{cards_o}</div>',
+    unsafe_allow_html=True,
+)
 cols_o = st.columns(3)
 for i, c in enumerate(MAP_ORDER):
     with cols_o[i]:
         is_sel = (origin == c)
-        label = f"\u2714 {_s(c)}" if is_sel else f"{CAMPUS_EMOJI[c]} {_s(c)}"
-        if st.button(label, key=f"o_{c}", use_container_width=True, disabled=is_sel):
+        btn_label = _s(c) if is_sel else _s(c)
+        if st.button(btn_label, key=f"o_{c}", use_container_width=True, disabled=is_sel):
             st.session_state.origin = c
             st.session_state.from_stop = None
-            # clear destination if same
             if st.session_state.destination == c:
                 st.session_state.destination = NONE
             st.rerun()
 
-# bus stop sub-buttons for Suita origin
+# bus stop sub-cards for Suita origin
 bus_stops = get_bus_stops(origin) if origin != NONE else []
 if bus_stops:
     stop_label = t("bus_stop_label", lang)
-    st.markdown(f"**{stop_label}**")
+    st.markdown(f"**\U0001F68F {stop_label}**")
     all_label = t("all_stops", lang)
-    stop_cols = st.columns(len(bus_stops) + 1)
-    with stop_cols[0]:
-        is_all = (from_stop is None)
-        if st.button(f"\u2714 {all_label}" if is_all else all_label,
-                     key="bs_all", use_container_width=True, disabled=is_all):
-            st.session_state.from_stop = None
-            st.rerun()
-    for j, bs in enumerate(bus_stops):
-        with stop_cols[j + 1]:
-            bs_name = t_place(bs["name"], lang)
+    all_stops_list = [{"id": None, "name_t": all_label}] + [
+        {"id": bs["id"], "name_t": t_place(bs["name"], lang)} for bs in bus_stops
+    ]
+    bs_cards = ""
+    for bs in all_stops_list:
+        is_sel = (from_stop == bs["id"])
+        color = "var(--purple)" if is_sel else "var(--muted)"
+        bg = "rgba(167,139,250,.08)" if is_sel else "var(--card)"
+        bdr = f"2px solid var(--purple)" if is_sel else "1px solid var(--border)"
+        chk = " \u2714" if is_sel else ""
+        bs_cards += (
+            f'<div style="text-align:center;padding:.4rem .2rem;border-radius:10px;'
+            f'border:{bdr};background:{bg};font-size:.75rem;font-weight:700;color:{color};">'
+            f'{bs["name_t"]}{chk}</div>'
+        )
+    n = len(all_stops_list)
+    st.markdown(
+        f'<div style="display:grid;grid-template-columns:repeat({n},1fr);gap:.4rem;margin-bottom:.3rem;">{bs_cards}</div>',
+        unsafe_allow_html=True,
+    )
+    bs_cols = st.columns(n)
+    for j, bs in enumerate(all_stops_list):
+        with bs_cols[j]:
             is_sel = (from_stop == bs["id"])
-            if st.button(f"\u2714 {bs_name}" if is_sel else bs_name,
-                         key=f"bs_{bs['id']}", use_container_width=True, disabled=is_sel):
+            if st.button(bs["name_t"], key=f"bs_{bs['id']}", use_container_width=True, disabled=is_sel):
                 st.session_state.from_stop = bs["id"]
                 st.rerun()
 
-# --- Destination buttons ---
+# --- Destination ---
 st.markdown(f"**\U0001F3AF {GOAL[lang]}**")
+cards_d = ""
+for c in MAP_ORDER:
+    cards_d += _campus_card(c, "to", destination == c, disabled=(c == origin))
+st.markdown(
+    f'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:.3rem;">{cards_d}</div>',
+    unsafe_allow_html=True,
+)
 cols_d = st.columns(3)
 for i, c in enumerate(MAP_ORDER):
     with cols_d[i]:
         is_sel = (destination == c)
         disabled = is_sel or (c == origin)
-        label = f"\u2714 {_s(c)}" if is_sel else f"{CAMPUS_EMOJI[c]} {_s(c)}"
-        if c == origin:
-            label = f"\U0001F6AB {_s(c)}"
-        if st.button(label, key=f"d_{c}", use_container_width=True, disabled=disabled):
+        if st.button(_s(c), key=f"d_{c}", use_container_width=True, disabled=disabled):
             st.session_state.destination = c
             st.rerun()
 
-# --- Swap button ---
+# --- Swap ---
 if origin != NONE and destination != NONE:
     swap_label = "\U0001F504 入れ替え" if lang == "ja" else "\U0001F504 Swap"
     if st.button(swap_label, key="swap"):
